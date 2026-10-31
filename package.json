@@ -3,6 +3,7 @@
   "displayName": "PMDSPT",
   "description": "Panic Mode, Dev Stats and Pomodoro timer for VS Code",
   "publisher": "iskreacher",
+  "license": "MIT",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.138.0"

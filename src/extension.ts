@@ -3,10 +3,10 @@ import { RestNotification } from './restNotification';
 import { SoundService } from './sound';
 import { TimerController, type TimerState } from './timer';
 
-const STATE_KEY = 'pmdstdm.timerState.test';
-const DEFAULT_WORK_SECONDS = 5;
-const DEFAULT_BREAK_SECONDS = 5;
-const DEFAULT_PANIC_SECONDS = 5;
+const STATE_KEY = 'pmdstdm.timerState';
+const DEFAULT_WORK_SECONDS = 25 * 60;
+const DEFAULT_BREAK_SECONDS = 5 * 60;
+const DEFAULT_PANIC_SECONDS = 5 * 60;
 
 export function activate(context: vscode.ExtensionContext) {
   const modeItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 103);
