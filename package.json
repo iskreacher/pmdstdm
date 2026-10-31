@@ -4,6 +4,10 @@
   "description": "Panic Mode, Dev Stats and Pomodoro timer for VS Code",
   "publisher": "iskreacher",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iskreacher/pmdstdm.git"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.138.0"
