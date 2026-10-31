@@ -1,0 +1,47 @@
+{
+  "name": "pmdstdm",
+  "displayName": "PMDSPT",
+  "description": "Panic Mode, Dev Stats and Pomodoro timer for VS Code",
+  "publisher": "iskreacher",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.138.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "pmdstdm.switchMode",
+        "title": "PMDSPT: Switch Mode"
+      },
+      {
+        "command": "pmdstdm.toggleTimer",
+        "title": "PMDSPT: Start/Pause Timer"
+      },
+      {
+        "command": "pmdstdm.openSettings",
+        "title": "PMDSPT: Open Settings"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "devDependencies": {
+    "@types/node": "24.x",
+    "@types/vscode": "^1.138.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^4.0.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.14.0"
+  }
+}
