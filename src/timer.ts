@@ -42,6 +42,22 @@ export class TimerController {
     }
   }
 
+  public restoreForStartup() {
+    if (this.state.mode !== 'pomodoro') {
+      this.restore();
+      return;
+    }
+
+    this.pause();
+    this.state.phase = 'work';
+    this.state.remainingSeconds = this.durations.workSeconds;
+    this.state.isRunning = false;
+    this.state.hasStarted = false;
+    this.state.savedAt = Date.now();
+    this.save();
+    this.onUpdate(this.state);
+  }
+
   public toggle(): 'timer started' | 'timer stopped' | 'timer resumed' {
     if (this.state.isRunning) {
       this.pause();
@@ -139,6 +155,7 @@ export class TimerController {
       if (this.state.mode === 'panic') {
         this.state.isRunning = false;
         this.state.remainingSeconds = this.durations.panicSeconds;
+        this.state.hasStarted = false;
         this.state.savedAt = Date.now();
         this.pause();
         this.save();

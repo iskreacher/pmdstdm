@@ -37,7 +37,7 @@ export class RestNotification implements vscode.Disposable {
     void vscode.window.withProgress(
       {
         location: vscode.ProgressLocation.Notification,
-        title: 'PMDSPT: время отдыха',
+        title: 'PMDSPT: Rest time',
         cancellable: true,
       },
       (_progress, token) => new Promise<void>((resolve) => {

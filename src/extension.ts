@@ -1,17 +1,19 @@
 import * as vscode from 'vscode';
 import { RestNotification } from './restNotification';
+import { SoundService } from './sound';
 import { TimerController, type TimerState } from './timer';
 
-const STATE_KEY = 'pmdstdm.timerState';
-const DEFAULT_WORK_SECONDS = 25 * 60;
-const DEFAULT_BREAK_SECONDS = 5 * 60;
-const DEFAULT_PANIC_SECONDS = 5 * 60;
+const STATE_KEY = 'pmdstdm.timerState.test';
+const DEFAULT_WORK_SECONDS = 5;
+const DEFAULT_BREAK_SECONDS = 5;
+const DEFAULT_PANIC_SECONDS = 5;
 
 export function activate(context: vscode.ExtensionContext) {
   const modeItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 103);
   const timerItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 102);
   const settingsItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 101);
   const restNotification = new RestNotification();
+  const soundService = new SoundService(context);
 
   const state: TimerState = context.globalState.get<TimerState>(STATE_KEY) ?? {
     mode: 'pomodoro',
@@ -31,11 +33,14 @@ export function activate(context: vscode.ExtensionContext) {
     },
     (phase) => {
       if (phase === 'work') {
-        void vscode.window.showInformationMessage('🍅 Пора отдохнуть.');
+        soundService.play('restStarted');
+        void vscode.window.showInformationMessage('🍅 Time to rest.');
       } else if (phase === 'break') {
-        void vscode.window.showInformationMessage('🍅 Опять работать...');
+        soundService.play('workStarted');
+        void vscode.window.showInformationMessage('🍅 Back to work...');
       } else {
-        void vscode.window.showErrorMessage('💀 Вы проиграли.');
+        soundService.play('panicFinished');
+        void vscode.window.showErrorMessage('💀 You lost.');
       }
     },
     {
@@ -56,31 +61,43 @@ export function activate(context: vscode.ExtensionContext) {
     timerItem,
     settingsItem,
     restNotification,
+    soundService,
     timer,
     vscode.commands.registerCommand('pmdstdm.switchMode', () => timer.switchMode()),
     vscode.commands.registerCommand('pmdstdm.toggleTimer', () => {
+      const wasRunning = state.isRunning;
+      const wasPanicMode = state.mode === 'panic';
       void vscode.window.showInformationMessage(timer.toggle());
+      if (!wasRunning && wasPanicMode) {
+        soundService.play('panicStarted');
+      }
     }),
-    vscode.commands.registerCommand('pmdstdm.openSettings', () => openSettings(timer)),
+    vscode.commands.registerCommand('pmdstdm.openSettings', () => openSettings(timer, soundService)),
   );
 
   modeItem.show();
   timerItem.show();
   settingsItem.show();
-  timer.restore();
+  timer.restoreForStartup();
 }
 
-async function openSettings(timer: TimerController) {
+async function openSettings(timer: TimerController, soundService: SoundService) {
   const selected = await vscode.window.showQuickPick(
     [
       { label: 'Set Panic Mode time', value: 'panic' },
       { label: 'Reset timer', value: 'reset' },
+      { label: 'Sound settings', value: 'sound' },
     ],
     { placeHolder: 'PMDSPT settings' },
   );
 
   if (selected?.value === 'reset') {
     timer.reset();
+    return;
+  }
+
+  if (selected?.value === 'sound') {
+    await soundService.configure();
     return;
   }
 
